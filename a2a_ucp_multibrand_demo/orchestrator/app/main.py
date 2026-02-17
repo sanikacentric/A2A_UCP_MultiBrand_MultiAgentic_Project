@@ -1,6 +1,7 @@
 import os
 from typing import Any, Dict, List
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from shared.app.a2a_client import a2a_get_agent_card, a2a_invoke
@@ -8,6 +9,14 @@ from shared.app.a2a_client import a2a_get_agent_card, a2a_invoke
 load_dotenv()
 
 app = FastAPI(title="Orchestrator (A2A)", version="1.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 DISCOVERY_URL = os.getenv("DISCOVERY_AGENT_URL", "http://localhost:7002")
 CHECKOUT_URL  = os.getenv("CHECKOUT_AGENT_URL", "http://localhost:7001")

@@ -43,8 +43,14 @@ Start-ServiceWindow -Title "Orchestrator :7000" `
     -WorkDir $AGENTS_ROOT `
     -Command "checkout_agent\.venv\Scripts\Activate.ps1; python -m uvicorn orchestrator.app.main:app --port 7000"
 
+# 6. Start Visualizer UI
+Write-Host "Starting A2A Visualizer..."
+Start-Process "$AGENTS_ROOT\visualizer\index.html"
+
 Write-Host "All services launching in background windows..."
 Write-Host "  - UCP Servers: http://localhost:8182, http://localhost:8282"
 Write-Host "  - Orchestrator: http://localhost:7000/docs"
 Write-Host "  - Checkout Agent: http://localhost:7001/docs"
 Write-Host "  - Discovery Agent: http://localhost:7002/docs"
+Write-Host "  - Visualizer UI: http://localhost:7000 (Via index.html)"
+Write-Host "  -> Visualizer File: $AGENTS_ROOT\visualizer\index.html"
