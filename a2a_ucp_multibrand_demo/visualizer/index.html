@@ -3,147 +3,515 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A2A Agent Flow Visualizer</title>
+    <title>A2A × UCP — Multi-Brand Agentic Commerce</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-container">
-        <header>
-            <div class="logo">
-                <span class="pulse-icon"></span>
-                <h1>A2A Visualizer</h1>
-            </div>
-            <div class="status-bar">
-                <div class="status-item">
-                    <span class="label">System:</span>
-                    <span id="system-status" class="value status-online">Operational</span>
+
+<!-- Animated Background -->
+<canvas id="bg-canvas"></canvas>
+<div class="bg-grid"></div>
+
+<div class="app-container">
+
+    <!-- ── HEADER ─────────────────────────────────────────────────── -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="logo-group">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="10" cy="20" r="6" fill="url(#lg1)"/>
+                        <circle cx="30" cy="20" r="6" fill="url(#lg2)"/>
+                        <circle cx="20" cy="8"  r="6" fill="url(#lg3)"/>
+                        <line x1="15" y1="17" x2="25" y2="17" stroke="white" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="13" y1="18" x2="20" y2="12" stroke="white" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="27" y1="18" x2="20" y2="12" stroke="white" stroke-width="1.5" opacity="0.6"/>
+                        <defs>
+                            <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#3b82f6"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient>
+                            <linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#10b981"/><stop offset="1" stop-color="#06b6d4"/></linearGradient>
+                            <linearGradient id="lg3" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f59e0b"/><stop offset="1" stop-color="#ec4899"/></linearGradient>
+                        </defs>
+                    </svg>
                 </div>
-                <div class="status-item">
-                    <span class="label">UCP Protocol:</span>
-                    <span class="value">v0.3</span>
-                </div>
-            </div>
-        </header>
-
-        <main>
-            <div class="viz-container">
-                <svg id="connection-layer"></svg>
-                
-                <div class="nodes-grid">
-                    <!-- Orchestrator (Top) -->
-                    <div id="node-orchestrator" class="node-card orchestrator">
-                        <div class="node-header">
-                            <span class="node-icon">🧠</span>
-                            <h3>Orchestrator</h3>
-                        </div>
-                        <div class="node-body">
-                            <div class="port">Port 7000</div>
-                            <div class="status-text">Idle</div>
-                        </div>
-                    </div>
-
-                    <!-- Agents (Middle) -->
-                    <div class="agents-row">
-                        <div id="node-discovery" class="node-card discovery">
-                            <div class="node-header">
-                                <span class="node-icon">🔍</span>
-                                <h3>Discovery Agent</h3>
-                            </div>
-                            <div class="node-body">
-                                <div class="port">Port 7002</div>
-                                <div class="status-text">Idle</div>
-                            </div>
-                        </div>
-
-                        <div id="node-checkout" class="node-card checkout">
-                            <div class="node-header">
-                                <span class="node-icon">🛒</span>
-                                <h3>Checkout Agent</h3>
-                            </div>
-                            <div class="node-body">
-                                <div class="port">Port 7001</div>
-                                <div class="status-text">Idle</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- UCP Servers (Bottom) -->
-                    <div class="servers-row">
-                        <div id="node-loreal" class="node-card server">
-                            <div class="node-header">
-                                <span class="node-icon">💄</span>
-                                <h3>L'Oréal (UCP)</h3>
-                            </div>
-                            <div class="node-body">
-                                <div class="port">Port 8282</div>
-                                <div class="status-text">Idle</div>
-                            </div>
-                        </div>
-
-                        <div id="node-sephora" class="node-card server">
-                            <div class="node-header">
-                                <span class="node-icon">✨</span>
-                                <h3>Sephora (UCP)</h3>
-                            </div>
-                            <div class="node-body">
-                                <div class="port">Port 8182</div>
-                                <div class="status-text">Idle</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <aside class="sidebar">
-                <div class="control-panel panel">
-                    <h2>Mission Control</h2>
-                    <p class="description">Initiate a multi-brand agentic purchase flow.</p>
-                    <div class="input-group">
-                        <textarea id="request-input" placeholder="Enter natural language request...">Find vitamin C serum from L'Oreal and matte lipstick from Sephora under $60 and checkout</textarea>
-                    </div>
-                    <button id="run-btn" class="primary-btn">Initiate A2A Flow</button>
-                    <div class="mode-toggle">
-                        <label class="switch">
-                            <input type="checkbox" id="mock-mode">
-                            <span class="slider round"></span>
-                        </label>
-                        <span>Simulation Mode</span>
-                    </div>
-                </div>
-
-                <div class="log-panel panel">
-                    <div class="panel-header">
-                        <h2>Live Protocol Logs</h2>
-                        <button id="clear-logs" class="icon-btn">🗑️</button>
-                    </div>
-                    <div id="log-content" class="log-content">
-                        <div class="log-entry system">System initialized. Waiting for input...</div>
-                    </div>
-                </div>
-            </aside>
-        </main>
-    </div>
-
-    <!-- Modals / Overlays -->
-    <div id="plan-modal" class="modal">
-        <div class="modal-content">
-            <header>
-                <h2>Agent Execution Plan</h2>
-                <button class="close-modal">&times;</button>
-            </header>
-            <div class="modal-body">
-                <div id="plan-details"></div>
-                <div class="actions">
-                    <button id="cancel-plan" class="secondary-btn">Cancel</button>
-                    <button id="confirm-plan" class="primary-btn">Confirm Purchase</button>
+                <div class="logo-text">
+                    <h1>A2A × UCP Visualizer</h1>
+                    <span class="subtitle">Multi-Brand Agentic Commerce Platform</span>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script src="script.js"></script>
+        <div class="header-center">
+            <div class="tech-badges">
+                <span class="badge badge-a2a">⟷ A2A Protocol v0.3</span>
+                <span class="badge badge-ucp">◈ UCP Servers</span>
+                <span class="badge badge-ai">✦ Gemini 2.5 Flash</span>
+                <span class="badge badge-serper">🌐 Serper Search</span>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="sys-status">
+                <div class="status-row">
+                    <span class="dot dot-pulse green"></span>
+                    <span class="status-text">All Systems Operational</span>
+                </div>
+                <div class="agent-dots">
+                    <span class="dot green" title="Orchestrator :7000"></span>
+                    <span class="dot green" title="Discovery :7002"></span>
+                    <span class="dot green" title="Checkout :7001"></span>
+                    <span class="dot green" title="L'Oréal UCP :8282"></span>
+                    <span class="dot green" title="Sephora UCP :8182"></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ── MAIN ───────────────────────────────────────────────────── -->
+    <main class="main-content">
+
+        <!-- Visualization Area -->
+        <div class="viz-area" id="viz-area">
+
+            <!-- Orbit Rings (decorative background) -->
+            <div class="orbit-ring r1" style="left:50%;top:50%;"></div>
+            <div class="orbit-ring r2" style="left:50%;top:50%;"></div>
+            <div class="orbit-ring r3" style="left:50%;top:50%;"></div>
+
+            <!-- Metrics Bar (top-center) -->
+            <div class="metrics-bar">
+                <div class="metric-item">
+                    <span class="metric-label">Agents</span>
+                    <span class="metric-val blue" id="m-agents">2</span>
+                </div>
+                <div class="metric-sep"></div>
+                <div class="metric-item">
+                    <span class="metric-label">Protocol Calls</span>
+                    <span class="metric-val green" id="m-calls">0</span>
+                </div>
+                <div class="metric-sep"></div>
+                <div class="metric-item">
+                    <span class="metric-label">AI Inferences</span>
+                    <span class="metric-val amber" id="m-ai">0</span>
+                </div>
+                <div class="metric-sep"></div>
+                <div class="metric-item">
+                    <span class="metric-label">UCP Sessions</span>
+                    <span class="metric-val purple" id="m-ucp">0</span>
+                </div>
+                <div class="metric-sep"></div>
+                <div class="metric-item">
+                    <span class="metric-label">Status</span>
+                    <span class="metric-val green" id="m-status">Idle</span>
+                </div>
+            </div>
+
+            <!-- Corner: A2A Protocol (top-left) -->
+            <div class="corner-box tl">
+                <div class="corner-box-title">⟷ A2A Protocol</div>
+                <div class="corner-box-divider"></div>
+                <p>Agent-to-Agent lets AI agents <strong>discover</strong> each other's capabilities via <code>agent-card.json</code> and invoke <strong>skills</strong> over standard HTTP.</p>
+                <div class="corner-box-kv" style="margin-top:0.6rem">
+                    <div class="kv-row"><span class="kv-key">Version</span><span class="kv-val blue">v0.3</span></div>
+                    <div class="kv-row"><span class="kv-key">Transport</span><span class="kv-val blue">HTTP/JSON</span></div>
+                    <div class="kv-row"><span class="kv-key">Discovery</span><span class="kv-val blue">agent-card.json</span></div>
+                </div>
+            </div>
+
+            <!-- Corner: UCP Protocol (top-right) -->
+            <div class="corner-box tr">
+                <div class="corner-box-title">◈ Universal Commerce Protocol</div>
+                <div class="corner-box-divider"></div>
+                <p>UCP is a <strong>standardized commerce API</strong> — any brand implements the same endpoints so agents can checkout across multiple brands seamlessly.</p>
+                <div class="corner-box-kv" style="margin-top:0.6rem">
+                    <div class="kv-row"><span class="kv-key">Endpoint</span><span class="kv-val green">/discover</span></div>
+                    <div class="kv-row"><span class="kv-key">Endpoint</span><span class="kv-val green">/checkout</span></div>
+                    <div class="kv-row"><span class="kv-key">Brands</span><span class="kv-val green">L'Oréal · Sephora</span></div>
+                </div>
+            </div>
+
+            <!-- Corner: Tech Stack (bottom-left) -->
+            <div class="corner-box bl">
+                <div class="corner-box-title">🛠 Tech Stack</div>
+                <div class="corner-box-divider"></div>
+                <div class="corner-box-kv">
+                    <div class="kv-row"><span class="kv-key">Backend</span><span class="kv-val amber">FastAPI (Python)</span></div>
+                    <div class="kv-row"><span class="kv-key">AI Model</span><span class="kv-val amber">Gemini 2.5 Flash</span></div>
+                    <div class="kv-row"><span class="kv-key">Search</span><span class="kv-val amber">Serper API</span></div>
+                    <div class="kv-row"><span class="kv-key">Protocol</span><span class="kv-val amber">A2A v0.3 + UCP</span></div>
+                    <div class="kv-row"><span class="kv-key">Frontend</span><span class="kv-val amber">Vanilla JS + SVG</span></div>
+                </div>
+            </div>
+
+            <!-- Corner: Live Metrics (bottom-right) -->
+            <div class="corner-box br">
+                <div class="corner-box-title">📡 Live Session</div>
+                <div class="corner-box-divider"></div>
+                <div class="corner-box-kv">
+                    <div class="kv-row"><span class="kv-key">Flow ID</span><span class="kv-val purple" id="c-flowid">—</span></div>
+                    <div class="kv-row"><span class="kv-key">L'Oréal Session</span><span class="kv-val purple" id="c-loreal">—</span></div>
+                    <div class="kv-row"><span class="kv-key">Sephora Session</span><span class="kv-val purple" id="c-sephora">—</span></div>
+                    <div class="kv-row"><span class="kv-key">Elapsed</span><span class="kv-val purple" id="c-elapsed">—</span></div>
+                    <div class="kv-row"><span class="kv-key">State</span><span class="kv-val purple blink" id="c-state">Idle</span></div>
+                </div>
+            </div>
+
+            <!-- SVG Connection Layer -->
+            <svg id="svg-layer">
+                <defs>
+                    <filter id="glow-sm"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                    <filter id="glow-md"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                    <marker id="arr-blue" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                        <path d="M 0 0 L 7 3.5 L 0 7 z" fill="#3b82f6" opacity="0.8"/>
+                    </marker>
+                    <marker id="arr-green" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                        <path d="M 0 0 L 7 3.5 L 0 7 z" fill="#10b981" opacity="0.8"/>
+                    </marker>
+                </defs>
+            </svg>
+
+            <!-- Protocol Label Container -->
+            <div id="proto-labels"></div>
+
+            <!-- Node Layout -->
+            <div class="node-layout" id="node-layout">
+
+                <!-- Row 1: User -->
+                <div class="layout-row row-user">
+                    <div id="node-user" class="node-card user-node"
+                         data-tip="The human user or AI client. Sends a natural language request to the Orchestrator.">
+                        <div class="node-halo"></div>
+                        <div class="node-body">
+                            <div class="node-icon">👤</div>
+                            <div class="node-info">
+                                <h3>User / Client</h3>
+                                <div class="node-tags">
+                                    <span class="tag tag-gray">Natural Language</span>
+                                </div>
+                                <div class="node-status" id="ns-user">Ready</div>
+                            </div>
+                        </div>
+                        <div class="node-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Orchestrator -->
+                <div class="layout-row row-orch">
+                    <div id="node-orchestrator" class="node-card orch-node"
+                         data-tip="Central brain. Parses user intent, delegates tasks to specialized agents via A2A Protocol. Port 7000 (FastAPI).">
+                        <div class="node-halo"></div>
+                        <div class="node-scan"></div>
+                        <div class="node-body">
+                            <div class="node-icon">🧠</div>
+                            <div class="node-info">
+                                <h3>Orchestrator</h3>
+                                <div class="node-tags">
+                                    <span class="tag tag-blue">:7000</span>
+                                    <span class="tag tag-blue">FastAPI</span>
+                                    <span class="tag tag-blue">A2A Host</span>
+                                </div>
+                                <div class="node-status" id="ns-orchestrator">Awaiting Request</div>
+                            </div>
+                        </div>
+                        <div class="node-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Agents -->
+                <div class="layout-row row-agents">
+                    <div id="node-discovery" class="node-card disco-node"
+                         data-tip="Web search + AI ranking. Uses Serper API for search, Gemini 2.5 Flash to pick the best product. Exposes A2A skill: web_search_ranked. Port 7002.">
+                        <div class="node-halo"></div>
+                        <div class="node-scan"></div>
+                        <div class="node-body">
+                            <div class="node-icon">🔍</div>
+                            <div class="node-info">
+                                <h3>Discovery Agent</h3>
+                                <div class="node-tags">
+                                    <span class="tag tag-purple">:7002</span>
+                                    <span class="tag tag-purple">A2A Skill</span>
+                                </div>
+                                <div class="node-status" id="ns-discovery">Standby</div>
+                            </div>
+                        </div>
+                        <div class="sub-chips">
+                            <span class="chip chip-serper">🌐 Serper API</span>
+                            <span class="chip chip-ai">✦ Gemini AI</span>
+                        </div>
+                        <div class="node-bar"></div>
+                    </div>
+
+                    <div id="node-checkout" class="node-card checkout-node"
+                         data-tip="Creates UCP checkout sessions per brand. Uses Gemini 2.5 Flash to write the human-friendly purchase plan. Exposes A2A skills: create_split_checkout, complete_split_checkout. Port 7001.">
+                        <div class="node-halo"></div>
+                        <div class="node-scan"></div>
+                        <div class="node-body">
+                            <div class="node-icon">🛒</div>
+                            <div class="node-info">
+                                <h3>Checkout Agent</h3>
+                                <div class="node-tags">
+                                    <span class="tag tag-pink">:7001</span>
+                                    <span class="tag tag-pink">A2A Skills</span>
+                                </div>
+                                <div class="node-status" id="ns-checkout">Standby</div>
+                            </div>
+                        </div>
+                        <div class="sub-chips">
+                            <span class="chip chip-ucp">◈ UCP Client</span>
+                            <span class="chip chip-ai">✦ Gemini AI</span>
+                        </div>
+                        <div class="node-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Row 4: UCP Servers -->
+                <div class="layout-row row-servers">
+                    <div id="node-loreal" class="node-card loreal-node"
+                         data-tip="L'Oréal brand UCP Server. Implements the Universal Commerce Protocol — standardized /discover and /checkout endpoints. Port 8282.">
+                        <div class="node-halo"></div>
+                        <div class="node-scan"></div>
+                        <div class="node-body">
+                            <div class="node-icon">💄</div>
+                            <div class="node-info">
+                                <h3>L'Oréal</h3>
+                                <div class="node-tags">
+                                    <span class="tag tag-amber">:8282</span>
+                                    <span class="tag tag-green">UCP Server</span>
+                                </div>
+                                <div class="node-status" id="ns-loreal">Standby</div>
+                            </div>
+                        </div>
+                        <div class="node-bar"></div>
+                    </div>
+
+                    <div id="node-sephora" class="node-card sephora-node"
+                         data-tip="Sephora brand UCP Server. Implements the Universal Commerce Protocol — standardized /discover and /checkout endpoints. Port 8182.">
+                        <div class="node-halo"></div>
+                        <div class="node-scan"></div>
+                        <div class="node-body">
+                            <div class="node-icon">✨</div>
+                            <div class="node-info">
+                                <h3>Sephora</h3>
+                                <div class="node-tags">
+                                    <span class="tag tag-teal">:8182</span>
+                                    <span class="tag tag-green">UCP Server</span>
+                                </div>
+                                <div class="node-status" id="ns-sephora">Standby</div>
+                            </div>
+                        </div>
+                        <div class="node-bar"></div>
+                    </div>
+                </div>
+
+            </div><!-- /node-layout -->
+
+            <!-- Step Banner -->
+            <div id="step-banner" class="step-banner hidden">
+                <span id="step-banner-icon"></span>
+                <span id="step-banner-text"></span>
+            </div>
+
+            <!-- Legend -->
+            <div class="viz-legend">
+                <div class="legend-item">
+                    <span class="legend-line a2a-line"></span>
+                    <span>A2A Protocol</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-line ucp-line"></span>
+                    <span>UCP Protocol</span>
+                </div>
+            </div>
+
+        </div><!-- /viz-area -->
+
+        <!-- ── SIDEBAR ─────────────────────────────────────────────── -->
+        <aside class="sidebar">
+
+            <!-- Control Panel -->
+            <div class="panel">
+                <div class="panel-title">
+                    <span>🚀</span> Mission Control
+                </div>
+                <label class="field-label">Natural Language Request</label>
+                <textarea id="request-input" class="request-textarea" rows="3">Find vitamin C serum from L'Oreal and matte lipstick from Sephora under $60 and checkout</textarea>
+
+                <div class="btn-row">
+                    <button id="run-btn" class="btn btn-primary">
+                        <span>▶</span> Run A2A Flow
+                    </button>
+                    <button id="auto-btn" class="btn btn-auto">
+                        <span>⚡</span> Auto-Play
+                    </button>
+                </div>
+
+                <div class="controls-row">
+                    <label class="toggle-wrap">
+                        <input type="checkbox" id="mock-mode" checked>
+                        <span class="toggle">
+                            <span class="toggle-knob"></span>
+                        </span>
+                        <span>Simulation Mode</span>
+                    </label>
+                    <div class="speed-wrap">
+                        <span>Speed</span>
+                        <input type="range" id="speed-range" min="0.5" max="4" step="0.5" value="1">
+                        <span id="speed-val" class="mono">1×</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flow Steps -->
+            <div class="panel panel-steps">
+                <div class="panel-title"><span>📊</span> Flow Progress</div>
+                <div class="steps" id="steps-list">
+                    <div class="step" data-n="1">
+                        <div class="step-dot"><span class="step-num">1</span></div>
+                        <div class="step-info">
+                            <div class="step-name">User Request</div>
+                            <div class="step-desc">Natural language → Orchestrator</div>
+                        </div>
+                    </div>
+                    <div class="step" data-n="2">
+                        <div class="step-dot"><span class="step-num">2</span></div>
+                        <div class="step-info">
+                            <div class="step-name">A2A: Discover L'Oréal</div>
+                            <div class="step-desc">Web search + Gemini ranking</div>
+                        </div>
+                    </div>
+                    <div class="step" data-n="3">
+                        <div class="step-dot"><span class="step-num">3</span></div>
+                        <div class="step-info">
+                            <div class="step-name">A2A: Discover Sephora</div>
+                            <div class="step-desc">Web search + Gemini ranking</div>
+                        </div>
+                    </div>
+                    <div class="step" data-n="4">
+                        <div class="step-dot"><span class="step-num">4</span></div>
+                        <div class="step-info">
+                            <div class="step-name">A2A: Create Checkout</div>
+                            <div class="step-desc">Delegate split checkout</div>
+                        </div>
+                    </div>
+                    <div class="step" data-n="5">
+                        <div class="step-dot"><span class="step-num">5</span></div>
+                        <div class="step-info">
+                            <div class="step-name">UCP: L'Oréal Session</div>
+                            <div class="step-desc">Discover → Create checkout</div>
+                        </div>
+                    </div>
+                    <div class="step" data-n="6">
+                        <div class="step-dot"><span class="step-num">6</span></div>
+                        <div class="step-info">
+                            <div class="step-name">UCP: Sephora Session</div>
+                            <div class="step-desc">Discover → Create checkout</div>
+                        </div>
+                    </div>
+                    <div class="step" data-n="7">
+                        <div class="step-dot"><span class="step-num">7</span></div>
+                        <div class="step-info">
+                            <div class="step-name">✦ AI: Generate Plan</div>
+                            <div class="step-desc">Gemini writes purchase plan</div>
+                        </div>
+                    </div>
+                    <div class="step" data-n="8">
+                        <div class="step-dot"><span class="step-num">8</span></div>
+                        <div class="step-info">
+                            <div class="step-name">User Confirmation</div>
+                            <div class="step-desc">Review & approve plan</div>
+                        </div>
+                    </div>
+                    <div class="step" data-n="9">
+                        <div class="step-dot"><span class="step-num">9</span></div>
+                        <div class="step-info">
+                            <div class="step-name">UCP: Complete Payments</div>
+                            <div class="step-desc">Both brands processed</div>
+                        </div>
+                    </div>
+                    <div class="step" data-n="10">
+                        <div class="step-dot"><span class="step-num">🎉</span></div>
+                        <div class="step-info">
+                            <div class="step-name">Purchase Complete!</div>
+                            <div class="step-desc">Receipts from all brands</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Logs -->
+            <div class="panel panel-log">
+                <div class="panel-title-row">
+                    <div class="panel-title"><span>📡</span> Live Protocol Logs</div>
+                    <button id="clear-btn" class="clear-btn" title="Clear">✕</button>
+                </div>
+                <div id="log-box" class="log-box">
+                    <div class="log-line system">
+                        <span class="log-ts">00:00:00</span>
+                        <span class="log-msg">◈ System initialized. Ready for input.</span>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+    </main>
+</div>
+
+<!-- ── PLAN MODAL ──────────────────────────────────────────────────── -->
+<div id="plan-modal" class="modal-bg">
+    <div class="modal-box">
+        <div class="modal-head">
+            <div class="modal-title">
+                <span class="modal-icon-big">📋</span>
+                <div>
+                    <h2>Agent Execution Plan</h2>
+                    <p>Review the AI-generated multi-brand checkout plan</p>
+                </div>
+            </div>
+            <button id="modal-close" class="modal-x">✕</button>
+        </div>
+        <div class="modal-content">
+            <div class="modal-section">
+                <div class="section-label">Items Found by Discovery Agent</div>
+                <div id="modal-items" class="modal-items"></div>
+            </div>
+            <div class="modal-section">
+                <div class="section-label">✦ Gemini-Generated Plan</div>
+                <div id="modal-plan" class="modal-plan-text"></div>
+            </div>
+            <div class="modal-section">
+                <div class="section-label">UCP Checkout Sessions</div>
+                <div id="modal-sessions" class="modal-sessions"></div>
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button id="cancel-btn" class="btn btn-ghost">Cancel</button>
+            <button id="confirm-btn" class="btn btn-confirm">✓ Confirm & Pay</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── SUCCESS OVERLAY ─────────────────────────────────────────────── -->
+<div id="success-bg" class="success-bg hidden">
+    <canvas id="confetti-canvas"></canvas>
+    <div class="success-box">
+        <div class="success-emoji">🎉</div>
+        <h2>Purchase Complete!</h2>
+        <p>A2A-powered multi-brand checkout succeeded across <strong>2 brands</strong></p>
+        <div id="receipt-row" class="receipt-row"></div>
+        <div class="tech-summary">
+            <span class="ts-item">⟷ A2A Protocol</span>
+            <span class="ts-sep">·</span>
+            <span class="ts-item">◈ UCP Servers</span>
+            <span class="ts-sep">·</span>
+            <span class="ts-item">✦ Gemini 2.5 Flash</span>
+        </div>
+        <button id="restart-btn" class="btn btn-primary" style="margin-top:1.5rem">↺ Start New Flow</button>
+    </div>
+</div>
+
+<!-- Tooltip -->
+<div id="tooltip" class="tooltip"></div>
+
+<script src="script.js"></script>
 </body>
 </html>

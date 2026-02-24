@@ -2,6 +2,7 @@ import os
 from typing import Any, Dict, List
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 
 from shared.app.a2a_client import a2a_get_agent_card, a2a_invoke
@@ -88,3 +89,9 @@ def run_demo(body: Dict[str, Any]):
         "created": created,
         "receipts": receipts,
     }
+
+# Serve the visualizer UI at /ui/ so fetch() calls to /demo/run are same-origin
+_vis_dir = os.path.join(os.path.dirname(__file__), "..", "..", "visualizer")
+_vis_dir = os.path.normpath(_vis_dir)
+if os.path.isdir(_vis_dir):
+    app.mount("/ui", StaticFiles(directory=_vis_dir, html=True), name="ui")
